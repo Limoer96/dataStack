@@ -4,11 +4,14 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var jwt = require('jsonwebtoken');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+
+const SECRIT = 'LIMOER';
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,6 +24,37 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+var allowCrossDomain = function(req, res, next) {
+  console.log('run cross!');
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, authorization');
+  res.set('Access-Control-Allow-Credentials','true');
+  next();
+};
+
+app.use(allowCrossDomain);
+
+
+app.use(function(req, res, next) {
+  const { headers, path } = req;
+  if(headers.authorization) {
+    // 针对这两个公共的API不做token的验证
+    const token = headers.authorization.split(' ')[1];
+    req.token = token;
+    jwt.verify(token, SECRIT, function(err, decoded) {
+      if(err) {
+        res.status(401).json({global: {error: 'INVALID TOKEN'}})
+      }else {
+        req.decoded = decoded;
+        next();
+      }
+    })
+  }else {
+  	next();
+  }
+})
 
 app.use('/', index);
 app.use('/users', users);

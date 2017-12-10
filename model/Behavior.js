@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('./db');
 
 var behaviorSchema = mongoose.Schema({
 	s_id: { type: Number, required: true },
