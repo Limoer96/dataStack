@@ -22,21 +22,22 @@ function mockExperiment() {
 	console.log('----begin');
 	const e_id = genExperimentId();
 	console.log('编号：', e_id);
-	const title='交换机认知与配置实验';
+	const title='Web技术随堂实验';
 	console.log('项目名称：', title);
-	const content = `1. 交换机认知：理解三层交换机的硬件组成，基本功能和工作原理；
-	2. 交换机的配置：掌握三层交换机的基本配置方式，为交换机划分VLan，对VLan进行管理和访问控制；
+	const content = `1. 掌握web开发技术，特别是HTML, CSS, JAVASCRIPT, AJAX等技术；
+	2. 运用web技术开发一个web应用。
 	`;
 	console.log('实验内容：', content);
-	const profession = '14软件工程 计算机网络课程设计';
+	const profession = '13软件工程 Web技术';
 	console.log('开设专业及课程：', profession);
-	const place = '计算机网络技术开发实验室(计算中心301)';
+	const place = '计算机系统与虚拟技术开发实验室(计算中心311)';
 	console.log("开设地点：", place);
-	const time = '每周四 17：30-21：30';
+	const place_id = 1;
+	const time = '每周六 15：30-17：30';
 	console.log('开设时间：', time);
-	const capacity = 70;
+	const capacity = 120;
 	console.log('课容量：', capacity);
-	const is_end = false;
+	const is_end = true;
 	console.log('已结课：', is_end ? '是' : '否');
 	const menber = [
 		{
@@ -57,6 +58,7 @@ function mockExperiment() {
 		content: content,
 		profession: profession,
 		place: place,
+		place_id: place_id,
 		time: time,
 		capacity: capacity,
 		is_end: is_end,
@@ -70,11 +72,16 @@ function insertIntoDB() {
 	experiment.save(function(err) {
 		if(err) {
 			console.log('插入实验失败');
+			console.log('err', err.message);
 		}else {
 			console.log('插入实验成功');
 		}
 	})
 }
+
+insertIntoDB();
+
+
 const id = '5a2695c3025a35487ff06443';
 function addOneMenber(_id, stu) {
 	Experiment.findById(_id, function(err, experiment) {
@@ -105,13 +112,13 @@ function addMenbers(data) {
 	}
 }
 
-rl.question('选择要插入的课堂成员数量', (value) => {
-	let count = Number(value);
-	console.log('开始插入数据------');
-	console.time('插入数据耗时');
-	getStudents(count, addMenbers);
-	console.timeEnd('插入数据耗时');
-	console.log('-------结束');
-})
+// rl.question('选择要插入的课堂成员数量', (value) => {
+// 	let count = Number(value);
+// 	console.log('开始插入数据------');
+// 	console.time('插入数据耗时');
+// 	getStudents(count, addMenbers);
+// 	console.timeEnd('插入数据耗时');
+// 	console.log('-------结束');
+// })
 
 

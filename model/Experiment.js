@@ -6,6 +6,7 @@ var experimentSchema = mongoose.Schema({
 	content: { type: String, required: true },
 	profession: { type: String, required: true }, // 开设专业
 	place: { type: String, required: true }, // 上机地点
+	place_id: { type: Number, required: true },
 	time: { type: String, required: true }, // 上机时间
 	capacity: { type: Number, required: true },
 	is_end: { type: Boolean, required: true },
