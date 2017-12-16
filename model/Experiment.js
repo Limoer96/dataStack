@@ -10,6 +10,11 @@ var experimentSchema = mongoose.Schema({
 	time: { type: String, required: true }, // 上机时间
 	capacity: { type: Number, required: true },
 	is_end: { type: Boolean, required: true },
+	day_id: { type: Number, required: true },
+	start_week: { type: Number, required: true },
+	end_week: { type: Number, required: true },
+	duration: { type: Number, required: true }, // 单次时长
+	attendance: [{type: Number}],
 	menber: [{
 		userId: { type: mongoose.Schema.Types.ObjectId, required: true },
 		s_id: { type: Number, required: true },

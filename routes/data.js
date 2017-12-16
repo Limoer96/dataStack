@@ -49,4 +49,28 @@ router.get('/behaviors', (req, res) => {
 	})
 })
 
+router.get('/experiment', (req, res) => {
+	const place_id = req.query.id;
+	Experiment.find({place_id: place_id}, function(err, rows) {
+		if(err) {
+			res.status(500).json({global: {error: 'Server Error'}})
+		} else {
+			res.json({global: {data: rows}});
+		}
+	})
+})
+
+router.get('/e', (req, res) => {
+	const e_id = req.query.e_id;
+	Experiment.find({e_id: e_id}, (err, experiment) => {
+		if(err) {
+			res.status(500).json({global: {error: 'Server Error'}})
+		}else {
+			res.json({global: {data: experiment[0]}})
+		}
+	})
+})
+
+
+
 module.exports = router;

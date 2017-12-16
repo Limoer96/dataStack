@@ -66,6 +66,20 @@ function mockExperiment() {
 	}
 }
 
+function addattendance(count) {
+	Experiment.findById('5a2e6cc1d5d7da4d981c69e6', function(err, experiment){
+		let attendance = experiment.attendance;
+		for(var i = 0; i < count; i++) {
+			attendance.addToSet(Math.round(Math.random()*20)+40);
+		}
+		experiment.markModified('attendance');
+		experiment.save();
+	})
+}
+console.log('run!');
+// addattendance(5);
+
+
 function insertIntoDB() {
 	const data = mockExperiment();
 	var experiment = new Experiment(data);
@@ -79,20 +93,21 @@ function insertIntoDB() {
 	})
 }
 
-insertIntoDB();
+// insertIntoDB();
 
 
-const id = '5a2695c3025a35487ff06443';
+const id = '5a2f6ef9d635002635b0a6e7';
 function addOneMenber(_id, stu) {
 	Experiment.findById(_id, function(err, experiment) {
 		if(err) {
-			console.log('插入用户失败');
+			console.log('插入用户失败', err);
 		}else {
 			let menber = experiment.menber;
 			menber.addToSet({
 				userId: stu._id,
 				s_id: stu.s_id,
-				name: stu.name
+				name: stu.name,
+				score: Math.round(Math.random()*60) + 40
 			})
 			experiment.markModified('menber');
 			experiment.save(function(err) {
@@ -112,13 +127,13 @@ function addMenbers(data) {
 	}
 }
 
-// rl.question('选择要插入的课堂成员数量', (value) => {
-// 	let count = Number(value);
-// 	console.log('开始插入数据------');
-// 	console.time('插入数据耗时');
-// 	getStudents(count, addMenbers);
-// 	console.timeEnd('插入数据耗时');
-// 	console.log('-------结束');
-// })
+rl.question('选择要插入的课堂成员数量', (value) => {
+	let count = Number(value);
+	console.log('开始插入数据------');
+	console.time('插入数据耗时');
+	getStudents(count, addMenbers);
+	console.timeEnd('插入数据耗时');
+	console.log('-------结束');
+})
 
 
