@@ -71,6 +71,28 @@ router.get('/e', (req, res) => {
 	})
 })
 
+router.get('/student', (req, res) => {
+	const { s_id } = req.query;
+	Student.find({s_id: s_id}, function(err, rows) {
+		if(err) {
+			res.status(500).json({global: {error: 'Server Error'}})
+		}else {
+			console.log(rows);
+			res.json({global: {data: rows[0]}})
+		}
+	})
+})
+
+router.get('/s', (req, res) => {
+	const { s_id } = req.query;
+	Behavior.find({s_id: s_id }, function(err, rows) {
+		if(err) {
+			res.status(500).json({global: {error: 'Server Error'}})
+		}else {
+			res.json({global: {data: rows[0]}})
+		}
+	})
+})
 
 
 module.exports = router;
