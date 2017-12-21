@@ -22,9 +22,9 @@ function genOneBehavior(experiment, user) {
 		s_id: s_id,
 		name: name,
 		behaviors: behaviors
-	};
+	};	
 }
-const id = '5a2695c3025a35487ff06443';
+const id = '5a2e6d3c6e80234e255283f4';
 function addBehavior(experiment, user) {
 	const data = genOneBehavior(experiment, user);
 	var stuBehavior = new Behavior(data);
@@ -59,10 +59,10 @@ function addBehaviorsForUser(userid) {
 				const date = new Date(2016, Math.round(Math.random() * 10) + 1, Math.round(Math.random() * 29) + 1, Math.round(Math.random() * 13) + 9, Math.round(Math.random() * 59));
 				const offset = (Math.round(Math.random() * 220) + 20) * 60 * 1000 // 学习时间是20分钟到240分钟不等
 				behaviors.addToSet({
-					e_id: behaviors[0].e_id,
+					e_id: 602928,
 					operating_category: Math.random()/8 > 0.1 ? 3 : 2,
-					start_time: date.getTime(),
-					end_time: new Date(date.getTime() + offset).getTime() 
+					start_time: Date.now(),
+					end_time: new Date(Date.now() + offset).getTime() 
 				})
 				user.markModified('behaviors');
 				user.save(function(err) {
@@ -80,7 +80,7 @@ rl.question('输入待插入行为条数', (value) => {
 	const count = Number(value);
 	console.time('耗时');
 	for(let i = 0; i < count; i++) {
-		addBehaviorsForUser('5a269fe3a615da55391c5160');
+		addBehaviorsForUser('5a269fe3a615da55391c5158');
 	}
 	console.timeEnd('耗时');
 })

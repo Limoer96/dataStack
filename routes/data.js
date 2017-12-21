@@ -4,6 +4,8 @@ var Experiment = require('../model/Experiment');
 var Behavior = require('../model/Behavior');
 var Student = require('../model/User');
 
+
+const offsetWeek = Math.ceil((new Date().getTime() - new Date(2017, 8, 12).getTime())/(1000*60*60*24*7));
 router.get('/experiments/count', (req, res) => {
 	Experiment.find({}, function(err, rows) {
 		if(err) {
@@ -94,5 +96,47 @@ router.get('/s', (req, res) => {
 	})
 })
 
+// 按星期周次获得数据
 
+router.get('/experiments_by_day', (req, res) => {
+	const { day } = req.query;
+	Experiment.find({day_id: day}, function(err, rows) {
+		if(err) {
+			res.status(500).json({global: {error: 'Server Error'}})
+		}else {
+			res.json({global: {data: rows}})
+		}
+	})
+})
+// 获取某一天的行为数据
+
+router.get('/behaviors/nowadays', (req, res) => {
+	console.log('runrunru');
+	Behavior.find({}, function(err, rows) {
+		console.log('ok!!!!!!');
+		if(err) {
+			console.log('run there error');
+			res.status(500).json({global: {error: 'Server Error'}})
+		}else {
+			console.log('rows', rows.length);
+			const behaviors = [];
+			const returnData = [];
+			// 获取所有的学习行为，并且匹配当天的学习行为
+			for(const one of rows) {
+				behaviors.push(...one.behaviors)
+			}
+			console.log('behaviors', behaviors.length);
+			const now = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
+			console.log('now', now);
+			for(const behavior of behaviors) {
+				const behaviorTime = new Date(behavior.start_time).getTime();
+				if( behaviorTime> now && behaviorTime < now + 1000*60*60*24) {
+					returnData.push(behavior);
+				}
+			}
+			console.log('return length', returnData.length);
+			res.json({ global: { data: returnData }})
+		}
+	})
+})
 module.exports = router;
