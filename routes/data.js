@@ -111,30 +111,30 @@ router.get('/experiments_by_day', (req, res) => {
 // 获取某一天的行为数据
 
 router.get('/behaviors/nowadays', (req, res) => {
-	console.log('runrunru');
 	Behavior.find({}, function(err, rows) {
-		console.log('ok!!!!!!');
 		if(err) {
-			console.log('run there error');
 			res.status(500).json({global: {error: 'Server Error'}})
 		}else {
-			console.log('rows', rows.length);
 			const behaviors = [];
 			const returnData = [];
 			// 获取所有的学习行为，并且匹配当天的学习行为
 			for(const one of rows) {
-				behaviors.push(...one.behaviors)
-			}
-			console.log('behaviors', behaviors.length);
-			const now = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
-			console.log('now', now);
-			for(const behavior of behaviors) {
-				const behaviorTime = new Date(behavior.start_time).getTime();
-				if( behaviorTime> now && behaviorTime < now + 1000*60*60*24) {
-					returnData.push(behavior);
+				const data = {
+					name: one.name,
+					s_id: one.s_id,
+					behaviors: []
+				}
+				const now = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
+				for(const behavior of one.behaviors) {
+					const behaviorTime = new Date(behavior.start_time).getTime();
+					if( behaviorTime> now && behaviorTime < now + 1000*60*60*24) {
+						data.behaviors.push(behavior);
+					}
+				}
+				if(data.behaviors.length > 0) {
+					returnData.push(data);
 				}
 			}
-			console.log('return length', returnData.length);
 			res.json({ global: { data: returnData }})
 		}
 	})

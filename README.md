@@ -65,7 +65,14 @@
 3. 时间(操作时间)
 4. 时间间隔(下线/离开时间)
 
+### 运行
 
+1. 开启MongoDB数据库，并且已经模拟好了数据
+2. clone
+3. npm install 
+4. nodemon（运行服务器）
+
+5. 只提供API，配合前端使用。地址: git@github.com:xiaomoer/dataStack-front.git
 
 
 
