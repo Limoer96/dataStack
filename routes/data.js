@@ -29,6 +29,37 @@ router.get('/experiments', (req, res) => {
 	})
 })
 
+// 根据学生的学号获取学生上课的实验数据和成绩数据等
+router.get('/s/info', (req, res) => {
+	const { s_id } = req.query;
+	Experiment.find({}, function(error, rows) {
+		if(error) {
+			res.status(500).json({global: {error: 'Server Error'}})
+		}else {
+			const returnData = [];
+			for(const one of rows) {
+				const menber = one.menber;
+				for(const student of menber) {
+					if(student.s_id === Number(s_id)) {
+						console.log('run in there');
+						returnData.push({
+							e_id: one.e_id,
+							title: one.title,
+							is_end: one.is_end,
+							place: one.place,
+							s_id: student.s_id,
+							name: student.name,
+							score: student.score,
+							is_complete: student.is_complete
+						})
+						break;
+					}
+				}
+			}
+			res.json({global: {data: returnData}})
+		}
+	})
+})
 
 router.get('/users', (req, res) => {
 	Student.find({}, function(error, rows){
@@ -81,6 +112,31 @@ router.get('/student', (req, res) => {
 		}else {
 			console.log(rows);
 			res.json({global: {data: rows[0]}})
+		}
+	})
+})
+
+router.get('/search_by_student_id', (req, res) => {
+	const { s_id } = req.query;
+	Student.find({s_id: s_id}, function(err, rows) {
+		if(err) {
+			res.status(500).json({global: {error: 'Server Error'}})
+		}else{
+			res.json({global: {data: rows}})
+		}
+	})
+})
+
+router.get('/students_id_all', (req, res) => {
+	Student.find({}, function(err, rows) {
+		if(err) {
+			res.status(500).json({global: {error: 'Server Error'}})
+		}else {
+			const data = [];
+			for(const row of rows) {
+				data.push(String(row.s_id));
+			}
+			res.json({global: {data: data}})
 		}
 	})
 })
@@ -139,4 +195,26 @@ router.get('/behaviors/nowadays', (req, res) => {
 		}
 	})
 })
+
+// 多条件的学生检索
+router.post('/mult_search', (req, res) => {
+	const { profession, grade, sex } = req.body.data;
+	Student.find({profession: profession, sex: sex}, function(err, rows) {
+		if(err) {
+			res.status(500).json({global: {error: 'Server Error'}})
+		}else {
+			const data = [];
+			for(const one of rows) {
+				let stuGrade = new Date(one.date_of_admission).getFullYear();
+				if(String(stuGrade) === grade) {
+					data.push(one);
+				}
+			}
+			res.json({global: {data: data}})
+		}
+	})
+})
+
+
+
 module.exports = router;
