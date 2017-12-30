@@ -215,6 +215,73 @@ router.post('/mult_search', (req, res) => {
 	})
 })
 
+// 关键词模糊搜索
+
+router.get('/experiments/search', (req, res) => {
+	const { keywords } = req.query;
+	const reg = new RegExp(keywords, 'i');
+	Experiment.find({ title: {$regex: reg}}, function(error, rows) {
+		if(error) {
+			res.status(500).json({global: {error: 'Server Error'}})
+		}else {
+			res.json({global: {data: rows}})
+		}
+	})
+})
+
+// 实验的多条件查询
+router.get('/experiments/mult_search', (req, res) => {
+	const { d, sw, ew, end } = req.query;
+	// 这边传过来的参数都是字符串格式的，所以需要转成相应的格式再比较，特别是Boolean类型的，要特别注意。
+	const is_end = end === 'false' ? false : true;
+	Experiment.find({duration: Number(d), is_end: is_end}, function(err, rows) {
+		if(err) {
+			res.status(500).json({global: {error: 'Server Error!'}})
+		}else {
+			const data = [];
+			for(const experiment of rows) {
+				if(experiment.start_week >= Number(sw) && experiment.end_week <= Number(ew)) {
+					data.push(experiment);
+				}
+			}
+			res.json({global: {data: data}})
+		}
+	})
+})
+// 学习行为的多条件查询
+// behaviors/mult_search?ts=${typeString}&d=${date}`).then(res => res.data)
+router.get('/behaviors/mult_search', (req, res) => {
+	const { ts, d } = req.query;
+	const timeStamp = new Date(d).getTime();
+	let typeList = ts.split('-');
+	typeList = typeList.map((item) => Number(item));
+	const data = [];
+	Behavior.find({}, function(err, behaviors) {
+		if(err) {
+			// 
+			res.status(500).json({global: {error: 'Server Error'}})
+		}else {
+			for(const one of behaviors) {
+				for(const behavior of one.behaviors) {
+					const startTime = new Date(behavior.start_time).getTime();
+					if(typeList.indexOf(behavior.operating_category) !== -1 && startTime > timeStamp && startTime - timeStamp <= 1000*60*60*24) {
+						data.push({
+							sId: one.s_id,
+							name: one.name,
+							eId: behavior.e_id,
+							startTime: behavior.start_time,
+							endTime: behavior.end_time
+						})
+					}
+				}
+			}
+			res.json({global: {data: data}})
+		}
+	})
+})
+
+
+
 
 
 module.exports = router;
