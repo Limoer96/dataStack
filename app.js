@@ -9,6 +9,7 @@ var jwt = require('jsonwebtoken');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var data = require('./routes/data');
+var feedback = require('./routes/feedback');
 var app = express();
 
 const SECRIT = 'LIMOER';
@@ -39,8 +40,10 @@ app.use(allowCrossDomain);
 
 app.use(function(req, res, next) {
   const { headers, path } = req;
+  if(path === '/feedback/add_star' || path === '/feedback/add_feedback') {
+    next();
+  }
   if(headers.authorization) {
-    // 针对这两个公共的API不做token的验证
     const token = headers.authorization.split(' ')[1];
     req.token = token;
     jwt.verify(token, SECRIT, function(err, decoded) {
@@ -51,14 +54,13 @@ app.use(function(req, res, next) {
         next();
       }
     })
-  }else {
-  	next();
   }
 })
 
 app.use('/', index);
 app.use('/users', users);
 app.use('/data', data);
+app.use('/feedback', feedback);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
