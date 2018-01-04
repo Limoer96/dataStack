@@ -10,6 +10,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var data = require('./routes/data');
 var feedback = require('./routes/feedback');
+var dm = require('./routes/dm');
 var app = express();
 
 const SECRIT = 'LIMOER';
@@ -29,8 +30,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 var allowCrossDomain = function(req, res, next) {
   console.log('run cross!');
   res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, authorization');
+  res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.set('Access-Control-Allow-Credentials','true');
   next();
 };
@@ -40,10 +41,9 @@ app.use(allowCrossDomain);
 
 app.use(function(req, res, next) {
   const { headers, path } = req;
-  if(path === '/feedback/add_star' || path === '/feedback/add_feedback') {
-    next();
-  }
+  // 验证带有token的普通请求
   if(headers.authorization) {
+    // 普通情况下验证token
     const token = headers.authorization.split(' ')[1];
     req.token = token;
     jwt.verify(token, SECRIT, function(err, decoded) {
@@ -54,6 +54,18 @@ app.use(function(req, res, next) {
         next();
       }
     })
+  }else{
+    // 这是三个两个公有API，不需要带上token
+    if(path === '/feedback/add_star' || path === '/feedback/add_feedback' || path==='/users/auth') {
+      next();
+    }
+    if(path === '/users/comfirm_token') {
+      next();
+    }
+    // 当请求为OPTIONS时不会带上token，直接让其经过
+    if(req.method === 'OPTIONS') {
+      next();
+    }
   }
 })
 
@@ -61,6 +73,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/data', data);
 app.use('/feedback', feedback);
+app.use('/dm', dm);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

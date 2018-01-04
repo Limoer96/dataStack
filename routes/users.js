@@ -12,12 +12,12 @@ router.get('/', function(req, res, next) {
 
 router.post('/auth', function(req, res) {
 	const { userName, password } = req.body.data;
-	// console.log('data:', req.body.data);
 	Admin.find({id: userName},function(err, admins) {
-		if(admins.length === 1) {
+		if (err) {
+			res.status(500).json({global: {error: 'Error~'}})
+		}else {
 			const admin = admins[0]; // 取得这个用户
 			const result = bcrypt.compareSync(password, admin.password_hash);
-			console.log('result', result);
 			if(result) {
 				const token = jwt.sign({
 					id: admin.id
@@ -28,15 +28,20 @@ router.post('/auth', function(req, res) {
 			}else {
 				res.status(501).json({global: {error: '用户名或密码错误, 请重试'}})
 			}
-		} else {
-			res.status(501).json({global: {error: '用户名或密码错误, 请重试'}})
 		}
 	})
 });
 
 // token 的验证已经以中间件的形式写在了app.js里面了
 router.post('/comfirm_token', (req, res) => {
-	res.json({global: {data: 'ok!'}})
+	const { token } = req.body.data;
+	jwt.verify(token, SECRIT, function(err, decoded){
+		if(err) {
+			res.status(501).json({global: {error: 'INvalid token'}})
+		}else {
+			res.json({global: {data: 'ok!'}});
+		}
+	})
 })
 
 module.exports = router;
