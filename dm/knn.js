@@ -52,7 +52,6 @@ class Knn {
   	result.sort(function(a, b) {
   		return a.score.length < b.score.length;
   	});
-  	console.log('result', result[0]);
   	return result[0];
   }
 }
